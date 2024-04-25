@@ -18,18 +18,22 @@ Clone the Repository:git clone https://github.com/Yassin-010/Movies-Library.git
 <br>
 5- Access the App: Open your web browser and visit http://localhost:3000
 
-
-
-
-
-
-
-
-
-
 ## Project Features
 Home Page: The home page displays details about a movie, including its title, poster image, and overview. The data is fetched from the provided JSON file and presented in a user-friendly format.
 
 Favorite Page: The favorite page is a separate page that welcomes the user and provides a dedicated space for storing their favorite movies. This page does not have any dynamic functionality but serves as a placeholder for future enhancements.
 
 The Project aims to provide users with an easy-to-use interface to explore movie information and save their favorites for future reference.
+
+## End points : 
+1- /
+<br>
+2- /favorite 
+<br>
+3- /trending
+<br>
+4- /search
+<br>
+5- /topRated
+<br>
+6- /now-playing
