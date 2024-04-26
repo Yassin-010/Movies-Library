@@ -37,3 +37,8 @@ The Project aims to provide users with an easy-to-use interface to explore movie
 5- /topRated
 <br>
 6- /now-playing
+<br>
+7- /addMovie (from my own database)
+<br>
+8- /getMovies (from my own database)
+<br>

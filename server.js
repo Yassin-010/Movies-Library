@@ -1,8 +1,13 @@
 const express = require('express');
+const app = express();
 const axios = require('axios');
 require('dotenv').config();
+const movieData = require('./Movie Data/data.json');
+const pg = require('pg');
+app.use(express.json());
+const client = new pg.Client(`postgresql://localhost:5432/movie_library_db`);
 
-const app = express();
+
 const PORT = 3000;
 
 // Home Page Endpoint
@@ -24,6 +29,11 @@ app.get('/topRated', handleTopRatedPage)
 // now-playign page Endpoint
 app.get('/now-playing', handleNowPlayingPage);
 
+// Add movie 
+app.post('/addMovie', handelAddMoviePage);
+
+// Get All Movies 
+app.get('/getMovies', handelGetAllMoviesPage);
 
 // Error handling middlewares
 app.use(handleServerError);
@@ -118,8 +128,38 @@ function handleNowPlayingPage(req, res) {
         .catch(err => {
             handleServerError(err);
         });
-}
+};
 
+
+function handelAddMoviePage(req, res) {
+    const { id, title, release_date, poster_path, overview } = req.body;
+
+    // Insert the movie into the database
+    const query = 'INSERT INTO movies (id, title, release_date, poster_path, overview) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+    const values = [id, title, release_date, poster_path, overview];
+
+    client
+        .query(query, values)
+        .then(() => {
+            res.status(200).json({ message: 'Movie added successfully' });
+        })
+        .catch((error) => {
+            handleServerError(error);
+        });
+};
+
+function handelGetAllMoviesPage(req, res) {
+    const query = 'SELECT * FROM movies';
+    client
+        .query(query)
+        .then((result) => {
+            const movies = result.rows;
+            res.status(200).json({ movies });
+        })
+        .catch(err => {
+            handleServerError(err);
+        })
+};
 
 // Error handling function for server errors (status 500)
 function handleServerError(err, req, res, next) {
@@ -148,6 +188,9 @@ function Movie(id, title, release_date, poster_path, overview) {
 }
 
 // Start the server
-app.listen(PORT, () => {
-    console.log('Server is running on port 3000');
-});
+client.connect()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log('Server is running on port 3000');
+        });
+    })
