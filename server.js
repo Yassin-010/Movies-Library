@@ -35,6 +35,15 @@ app.post('/addMovie', handelAddMoviePage);
 // Get All Movies 
 app.get('/getMovies', handelGetAllMoviesPage);
 
+// Updade Move 
+app.put('/UPDATE/:id', handelUpdateMoviePage);
+
+// Delete Move 
+app.delete('/DELETE/:id', handleDeleteMoviePage);
+
+// Get Move 
+app.get('/getMovie/:id', handleGetMoviePage);
+
 // Error handling middlewares
 app.use(handleServerError);
 app.use(handlePageNotFoundError);
@@ -161,6 +170,66 @@ function handelGetAllMoviesPage(req, res) {
         })
 };
 
+function handelUpdateMoviePage(req, res) {
+    const { id } = req.params;
+    const { title, release_date, poster_path, overview } = req.body;
+
+    // Update the movie in the database
+    const query = `UPDATE movies SET title = $1, release_date = $2, poster_path = $3, overview = $4 WHERE id = ${id} RETURNING *`;
+    const values = [title, release_date, poster_path, overview];
+
+    client
+        .query(query, values)
+        .then((data) => {
+            res.status(200).json({ message: 'Movie updated successfully' });
+        })
+        .catch(err => {
+            handleServerError(err);
+        })
+}
+
+
+function handleDeleteMoviePage(req, res) {
+    const id = req.params.id;
+    // Delete the movie from the database
+    const query = `DELETE FROM movies WHERE id = ${id}`;
+
+    client
+        .query(query)
+        .then(() => {
+            res.status(200).json({ message: 'Movie deleted successfully' });
+        })
+        .catch((error) => {
+            console.error('Error deleting movie:', error);
+            res.status(500).json({ error: 'Something went wrong' });
+        });
+}
+
+function handleGetMoviePage(req, res) {
+    const { id } = req.params;
+
+    // Query to fetch the movie from the database
+    const query = `SELECT * FROM movies WHERE id = ${id} `;
+
+    client
+        .query(query)
+        .then((result) => {
+            const movie = result.rows[0];
+            if (movie) {
+                res.status(200).json({ movie });
+            } else {
+                res.status(404).json({ error: 'Movie not found' });
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching movie:', error);
+            res.status(500).json({ error: 'Something went wrong' });
+        });
+}
+
+
+
+
 // Error handling function for server errors (status 500)
 function handleServerError(err, req, res, next) {
     console.error(err);
@@ -174,7 +243,7 @@ function handleServerError(err, req, res, next) {
 function handlePageNotFoundError(req, res) {
     res.status(404).json({
         status: 404,
-        responseText: 'Page not found',
+        responseText: 'Not found',
     });
 }
 
