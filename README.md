@@ -42,3 +42,9 @@ The Project aims to provide users with an easy-to-use interface to explore movie
 <br>
 8- /getMovies (from my own database)
 <br>
+9- /UPDATE/:id
+<br>
+10- /DELETE/:id
+<br>
+11- /getMovie/:id
+<br>
