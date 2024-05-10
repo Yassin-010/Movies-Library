@@ -5,11 +5,10 @@ require('dotenv').config();
 const movieData = require('./Movie Data/data.json');
 const pg = require('pg');
 app.use(express.json());
-const client = new pg.Client(`postgresql://localhost:5432/movie_library_db`);
+const client = new pg.Client(process.env.DATABASE_URL);
 
 
-const PORT = 3000;
-
+const PORT = process.env.PORT;
 // Home Page Endpoint
 app.get('/', handleHomePage);
 
@@ -260,6 +259,6 @@ function Movie(id, title, release_date, poster_path, overview) {
 client.connect()
     .then(() => {
         app.listen(PORT, () => {
-            console.log('Server is running on port 3000');
+            console.log('Server is running on port 3005');
         });
     })
